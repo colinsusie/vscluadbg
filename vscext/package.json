@@ -1,0 +1,108 @@
+{
+	"name": "lua5.3-debugger",
+	"displayName": "lua5.3 debugger",
+	"description": "A debugger for lua5.3",
+	"version": "0.9.0",
+	"publisher": "colin",
+	"author": {
+		"name": "colin"
+	},
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/colinsusie/vscluadebugger"
+	},
+	"bugs": {
+		"url": "https://github.com/colinsusie/vscluadebugger/issues"
+	},
+	"engines": {
+		"vscode": "^1.0.0"
+	},
+	"categories": [
+		"Debuggers"
+	],
+	"keywords": [
+		"debugger", "lua"
+	],
+	"activationEvents": [
+	],
+	"main": "./extension.js",
+	"scripts": {
+	},
+	"devDependencies": {
+		"@types/glob": "^7.1.1",
+		"@types/mocha": "^5.2.7",
+		"@types/node": "^12.11.7",
+		"@types/vscode": "^1.41.0",
+		"eslint": "^6.6.0",
+		"glob": "^7.1.5",
+		"mocha": "^6.2.2",
+		"typescript": "^3.6.4",
+		"vscode-test": "^1.2.2"
+	},
+	"contributes": {
+		"breakpoints": [
+			{
+				"language": "lua"
+			}
+		],
+		"debuggers": [
+			{
+				"type": "lua",
+				"label": "Lua5.3 Debugger",
+				"languages": [
+                    "lua"
+                ],
+				"linux": {
+					"program": "./bin/linux/vscluadbg"
+				},
+				"windows": {
+					"program": "./bin/win/vscluadbg.exe"
+				},
+				"osx": {
+					"program": "./bin/osx/vscluadbg"
+				},
+				"initialConfigurations": [
+					{
+						"name": "Lua5.3 Debugger",
+						"type": "lua",
+						"request": "launch",
+						"program": "${workspaceRoot}/main.lua",
+						"stopOnEntry": false,
+						"luaPath": "${workspaceRoot}/?.lua",
+						"cPath": "${workspaceRoot}/?.so"
+					}
+				],
+				"configurationAttributes": {
+					"launch": {
+						"required": [
+							"program"
+						],
+						"properties": {
+							"program": {
+								"type": "string",
+								"description": "Lua 5.3 to debug - set this to the path of the script",
+								"default": "main.lua"
+							},
+							"stopOnEntry": {
+								"type": "boolean",
+								"description": "Automatically stop after launch.",
+								"default": false
+							},
+							"luaPath": {
+								"type": "string",
+								"description": "Search path for Lua programs",
+								"default": "${workspaceRoot}/?.lua"
+							},
+							"cPath": {
+								"type": "string",
+								"description": "Search path for native libraries",
+								"default": "${workspaceRoot}/?.so"
+							}
+						}
+					}
+				}
+			}
+		]
+	}
+}
