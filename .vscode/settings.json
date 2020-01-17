@@ -1,0 +1,12 @@
+{
+    "files.associations": {
+        "lua.h": "c",
+        "typeinfo": "c",
+        "vscdbg.h": "c",
+        "defines.h": "c",
+        "luaconf.h": "c",
+        "limits.h": "c"
+    },
+    "cmake.configureOnOpen": false,
+    "C_Cpp.default.includePath": ["3rd/lua/src"]
+}

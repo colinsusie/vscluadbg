@@ -53,5 +53,4 @@ dkms.conf
 
 # other
 vscluadbg
-.vscode/
 node_modules/
