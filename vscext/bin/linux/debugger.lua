@@ -20,7 +20,7 @@ local ST_STEP_OUT = 6   -- 单步跳出
 local ST_TERMINATED = 10 -- 终止状态 
 
 -- 调试器
-local debugger = {
+debugger = {
     state = ST_BIRTH,   -- 状态
     currco = {},        -- 当前的协程信息
     coinfos = {},       -- 协程信息
@@ -29,6 +29,7 @@ local debugger = {
     isattach = false,   -- 是否attach状态
     ispause = false,    -- 是否是主动暂停状态
 
+    log = nil,          -- 测试代码
     obuffer = "",       -- 输出的缓冲
     osource = nil,      -- 输出的代码
     oline = nil,        -- 输出的行
@@ -292,6 +293,10 @@ end
 
 -----------------------------------------------------------------------------------
 -- 全局函数
+function on_start()
+    debugger.log = io.open("/home/cogame/colin/mylib/run.log", 'w+')
+    debuglog("on_start\n")
+end
 
 -- 开始hook一个线程
 function on_new_thread(co)
@@ -422,4 +427,9 @@ function on_output(str, source, line)
         debugger.osource = nil
         debugger.oline = nil
     end
+end
+
+function debuglog(msg)
+    debugger.log:write(tostring(msg))
+    debugger.log:flush()
 end

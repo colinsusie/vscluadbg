@@ -1,8 +1,8 @@
 #include "defines.h"
 #include "vscdbg.h"
 
-static void init_debugger(lua_State *L) {
-    vscdbg_t *dbg = vscdbg_new(L);
+static void init_debugger(lua_State *L, const char *curpath) {
+    vscdbg_t *dbg = vscdbg_new(L, curpath);
     vscdbg_attach_state(L, dbg);
     vscdbg_new_thread(L, L);
 }
@@ -59,10 +59,11 @@ void do_writeline(lua_State *L) {
 //-------------------------------------------------------------
 
 int main(int argc, char const *argv[]) {
+    const char *root = argv[0];
     lua_State *L = luaL_newstate();
     luaL_openlibs(L);
 
-    init_debugger(L);
+    init_debugger(L, root);
     start_debugger(L);
 
     free_debugger(L);

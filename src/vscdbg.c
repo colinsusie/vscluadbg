@@ -3,8 +3,9 @@
 #include "lstate.h"
 
 // 高度器脚本
-static const char *LUA_DEBUGGER = "debugger.lua";
+static const char *LUA_DEBUGGER = "/debugger.lua";
 // 全局函数
+static const char *ON_START = "on_start";
 static const char *ON_NEW_THREAD = "on_new_thread";
 static const char *ON_FREE_THREAD = "on_free_thread";
 static const char *ON_CALL = "on_call";
@@ -22,9 +23,19 @@ static void check_call(lua_State *L, int error, const char *func) {
 
 // 运行调试器的Lua脚本
 static void vscdbg_run_luadebbuer(vscdbg_t *dbg) {
-    int err = luaL_dofile(dbg->dL, LUA_DEBUGGER);
+    char path[512];
+    strcpy(path, dbg->curpath);
+    strcat(path, LUA_DEBUGGER);
+    int err = luaL_dofile(dbg->dL, path);
     if (err) {
         fprintf(stderr, "%s\n", lua_tostring(dbg->dL, -1));
+        return;
+    }
+
+    if (lua_getglobal(dbg->dL, ON_START) == LUA_TFUNCTION) {
+        check_call(dbg->dL, lua_pcall(dbg->dL, 0, 0, 0), ON_START);
+    } else {
+        fprintf(stderr, "%s must be a function\n", ON_START);
     }
 }
 
@@ -174,16 +185,49 @@ void open_mylibs(lua_State *dL) {
     }
 }
 
+static void init_lua_path(lua_State *dL, const char *path) {
+    lua_getglobal(dL, "package");    // <pkg>
+    lua_getfield(dL, -1, "path");    // <pkg|path>
+    lua_pushstring(dL, "path");     // <pkg|path|pathkey>
+    lua_pushfstring(dL, "%s;%s/?.lua;%s/?.luac", lua_tostring(dL, -2), path, path); // <pkg|path|pathkey|pathval>
+    lua_settable(dL, -4);    // <pkg|path>
+    lua_pop(dL, 1); // <pkg>
+
+#ifdef _WIN32
+    #define LIB_EXT "dll"
+#else
+    #define LIB_EXT "so"
+#endif
+    lua_getfield(dL, -1, "cpath");    // <pkg|cpath>
+    lua_pushstring(dL, "cpath");     // <pkg|cpath|cpathkey>
+    lua_pushfstring(dL, "%s;%s/?.%s", lua_tostring(dL, -2), path, LIB_EXT); // <pkg|cpath|cpathkey|cpathval>
+    lua_settable(dL, -4);    // <pkg|path>
+    lua_pop(dL, 2); // <pkg>
+}
+
 // 新建DBG
-vscdbg_t* vscdbg_new(lua_State *L) {
+vscdbg_t* vscdbg_new(lua_State *L, const char *curpath) {
     vscdbg_t *dbg = malloc(sizeof(vscdbg_t));
     memset(dbg, 0, sizeof(vscdbg_t));
+
+    // 当前目录
+    const char *pos = strrchr(curpath, '/');
+    if (!pos) {
+#ifdef _WIN32
+        pos = strrchr(curpath, '\\');
+#endif
+    }
+    if (pos) {
+        int n = pos - curpath;
+        strncpy(dbg->curpath, curpath, n);
+        dbg->curpath[n+1] = '\0';
+    }
 
     dbg->L = L;
     dbg->dL = luaL_newstate();
     luaL_openlibs(dbg->dL);
     open_mylibs(dbg->dL);
-    
+    init_lua_path(dbg->dL, dbg->curpath);
     vscdbg_attach_state(dbg->dL, dbg);
     vscdbg_run_luadebbuer(dbg);
     return dbg;

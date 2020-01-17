@@ -56,4 +56,4 @@ end
 -- start()
 
 print(...)
--- main()
+main()
