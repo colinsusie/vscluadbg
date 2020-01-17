@@ -4,7 +4,7 @@
 PREFIX=/usr/local
 
 # System's libraries directory (where binary libraries are installed)
-LUA_LIBDIR= ../../bin
+LUA_LIBDIR= ../../vscext/bin/linux
 
 # Lua includes directory
 # LUA_INC += -I$(PREFIX)/include

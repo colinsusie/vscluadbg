@@ -20,7 +20,7 @@ test: lib
 
 install: $(TARGET)
 	mkdir -p $(DESTDIR)$(LUA_LIBDIR)
-	cp $(TARGET) $(DESTDIR)$(LUA_LIBDIR)
+	mv $(TARGET) $(DESTDIR)$(LUA_LIBDIR)
 
 clean:
 	rm -f $(TARGET) $(OBJS)

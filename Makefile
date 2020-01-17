@@ -8,7 +8,8 @@ LIBS= -ldl -lm -llua $(LPATH)
 
 HEADER = $(wildcard src/*.h)
 SRCS= $(wildcard src/*.c)
-PROG= bin/vscluadbg
+BINROOT= vscext/bin/linux
+PROG= $(BINROOT)/vscluadbg
 
 all: lua cjson lfs $(PROG)
 	
@@ -30,4 +31,4 @@ clean:
 cleanall:
 	$(MAKE) -C 3rd/lua clean
 	$(MAKE) -C 3rd/lua-cjson clean
-	rm -f src/*.o $(PROG) bin/*.so
+	rm -f src/*.o $(PROG) $(BINROOT)/*.so

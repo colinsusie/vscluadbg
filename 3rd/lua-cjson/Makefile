@@ -13,16 +13,16 @@
 ##### Build defaults #####
 LUA_VERSION =       5.3
 TARGET =            cjson.so
-PREFIX =            ../..
+PREFIX =            ../../vscext/bin
 #CFLAGS =            -g -Wall -pedantic -fno-inline
 CFLAGS =            -O3 -Wall -pedantic -DNDEBUG
 CJSON_CFLAGS =      -std=gnu99 -fPIC
 CJSON_LDFLAGS =     -shared
 DESTDIR= .
-LUA_INCLUDE_DIR =   $(PREFIX)/3rd/lua/src
-LUA_CMODULE_DIR =   $(PREFIX)/bin
-LUA_MODULE_DIR =    $(PREFIX)/bin
-LUA_BIN_DIR =       $(PREFIX)/bin
+LUA_INCLUDE_DIR =   ../lua/src
+LUA_CMODULE_DIR =   $(PREFIX)/linux
+LUA_MODULE_DIR =    $(PREFIX)/linux
+LUA_BIN_DIR =       $(PREFIX)/linux
 
 CC= gcc
 AR= gcc -o
@@ -105,7 +105,7 @@ $(TARGET): $(OBJS)
 
 install: $(TARGET)
 	mkdir -p $(DESTDIR)/$(LUA_CMODULE_DIR)
-	cp $(TARGET) $(DESTDIR)/$(LUA_CMODULE_DIR)
+	mv $(TARGET) $(DESTDIR)/$(LUA_CMODULE_DIR)
 	chmod $(EXECPERM) $(DESTDIR)/$(LUA_CMODULE_DIR)/$(TARGET)
 
 install-extra:

@@ -12,7 +12,7 @@
 #include <stdarg.h>
 #include <stddef.h>
 
-
+typedef struct lua_State lua_State;
 #include "luaconf.h"
 
 
@@ -53,7 +53,7 @@
 #define LUA_ERRERR	6
 
 
-typedef struct lua_State lua_State;
+
 
 
 /*

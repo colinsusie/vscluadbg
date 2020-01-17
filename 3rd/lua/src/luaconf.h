@@ -782,7 +782,6 @@
 ** without modifying the main part of the file.
 */
 // 覆盖一些自定义函数
-typedef struct lua_State lua_State;
 void on_userstateopen(lua_State *L);
 void on_userstateclose(lua_State *L);
 void on_userstatethread(lua_State *L, lua_State *L1);
