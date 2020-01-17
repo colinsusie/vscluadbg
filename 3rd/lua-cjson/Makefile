@@ -41,9 +41,9 @@ AR= gcc -o
 
 ## MacOSX (Macports)
 #PREFIX =            /opt/local
-#ifeq ($(PLAT), macosx)
+ifeq ($(PLAT), macosx)
 CJSON_LDFLAGS := -bundle -undefined dynamic_lookup
-#endif
+endif
 #CJSON_LDFLAGS =     -bundle -undefined dynamic_lookup
 
 ## Solaris

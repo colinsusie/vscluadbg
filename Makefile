@@ -14,10 +14,11 @@ CC= gcc
 IPATH= -I3rd/lua/src
 LPATH= -L3rd/lua/src
 
-MYFLAGS := -std=gnu99 -g -Wall -Wl,-E $(IPATH) 
-#ifeq ($(PLAT), macosx)
+ifeq ($(PLAT), macosx)
 MYFLAGS := -std=gnu99 -g -Wall $(IPATH) 
-#else
+else
+MYFLAGS := -std=gnu99 -g -Wall -Wl,-E $(IPATH) 
+endif
 
 LIBS= -ldl -lm -llua $(LPATH)
 HEADER = $(wildcard src/*.h)

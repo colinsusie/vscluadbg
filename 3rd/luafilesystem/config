@@ -12,11 +12,11 @@ LUA_LIBDIR= ../../vscext/bin/$(PLAT)
 LUA_INC += -I../lua/src
 
 # OS dependent
-#ifneq ($(PLAT), macosx)
+ifneq ($(PLAT), macosx)
 LIB_OPTION= -shared #for Linux
-#else
+else
 LIB_OPTION= -bundle -undefined dynamic_lookup #for MacOS X
-#endif
+endif
 
 LIBNAME= $T.so.$V
 
