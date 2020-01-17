@@ -1,29 +1,43 @@
-.PHONY: clean lua cjson lfs
+PLAT ?= none
+PLATS = linux macosx
+
+.PHONY: $(PLATS) clean cleanall lua cjson lfs
+
+none:
+	@echo "usage: make <PLAT>"
+	@echo "  PLAT is one of: $(PLATS)"
+
+$(PLATS):
+	$(MAKE) all PLAT=$@
 
 CC= gcc
 IPATH= -I3rd/lua/src
 LPATH= -L3rd/lua/src
-MYFLAGS= -std=gnu99 -g -Wall -Wl,-E $(IPATH) 
-LIBS= -ldl -lm -llua $(LPATH)
 
+MYFLAGS := -std=gnu99 -g -Wall -Wl,-E $(IPATH) 
+#ifeq ($(PLAT), macosx)
+MYFLAGS := -std=gnu99 -g -Wall $(IPATH) 
+#else
+
+LIBS= -ldl -lm -llua $(LPATH)
 HEADER = $(wildcard src/*.h)
 SRCS= $(wildcard src/*.c)
-BINROOT= vscext/bin/linux
+BINROOT= vscext/bin/$(PLAT)
 PROG= $(BINROOT)/vscluadbg
 
-all: lua cjson lfs $(PROG)
+all: lua lfs cjson $(PROG)
 	
-$(PROG): $(SRCS) $(HEADER)
-	$(CC) $(MYFLAGS) -o $@ $(SRCS) $(LIBS)
-
 lua: 
-	$(MAKE) -C 3rd/lua linux
+	$(MAKE) -C 3rd/lua $(PLAT)
 
 cjson:
-	$(MAKE) -C 3rd/lua-cjson install
+	$(MAKE) -C 3rd/lua-cjson install PLAT=$(PLAT)
 
 lfs:
-	$(MAKE) -C 3rd/luafilesystem install
+	$(MAKE) -C 3rd/luafilesystem install PLAT=$(PLAT)
+
+$(PROG): $(SRCS) $(HEADER)
+	$(CC) $(MYFLAGS) -o $@ $(SRCS) $(LIBS)
 
 clean:
 	rm -f $(PROG)

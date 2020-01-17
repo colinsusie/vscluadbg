@@ -20,9 +20,9 @@ CJSON_CFLAGS =      -std=gnu99 -fPIC
 CJSON_LDFLAGS =     -shared
 DESTDIR= .
 LUA_INCLUDE_DIR =   ../lua/src
-LUA_CMODULE_DIR =   $(PREFIX)/linux
-LUA_MODULE_DIR =    $(PREFIX)/linux
-LUA_BIN_DIR =       $(PREFIX)/linux
+LUA_CMODULE_DIR =   $(PREFIX)/$(PLAT)
+LUA_MODULE_DIR =    $(PREFIX)/$(PLAT)
+LUA_BIN_DIR =       $(PREFIX)/$(PLAT)
 
 CC= gcc
 AR= gcc -o
@@ -41,6 +41,9 @@ AR= gcc -o
 
 ## MacOSX (Macports)
 #PREFIX =            /opt/local
+#ifeq ($(PLAT), macosx)
+CJSON_LDFLAGS := -bundle -undefined dynamic_lookup
+#endif
 #CJSON_LDFLAGS =     -bundle -undefined dynamic_lookup
 
 ## Solaris
