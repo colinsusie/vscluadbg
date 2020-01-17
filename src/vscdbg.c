@@ -3,7 +3,7 @@
 #include "lstate.h"
 
 // 高度器脚本
-static const char *LUA_DEBUGGER = "/debugger.lua";
+static const char *LUA_DEBUGGER = "/../debugger.lua";
 // 全局函数
 static const char *ON_START = "on_start";
 static const char *ON_NEW_THREAD = "on_new_thread";
@@ -189,7 +189,7 @@ static void init_lua_path(lua_State *dL, const char *path) {
     lua_getglobal(dL, "package");    // <pkg>
     lua_getfield(dL, -1, "path");    // <pkg|path>
     lua_pushstring(dL, "path");     // <pkg|path|pathkey>
-    lua_pushfstring(dL, "%s;%s/?.lua;%s/?.luac", lua_tostring(dL, -2), path, path); // <pkg|path|pathkey|pathval>
+    lua_pushfstring(dL, "%s;%s/../?.lua;%s/../?.luac", lua_tostring(dL, -2), path, path); // <pkg|path|pathkey|pathval>
     lua_settable(dL, -4);    // <pkg|path>
     lua_pop(dL, 1); // <pkg>
 

@@ -59,11 +59,11 @@ void do_writeline(lua_State *L) {
 //-------------------------------------------------------------
 
 int main(int argc, char const *argv[]) {
-    const char *root = argv[0];
+    const char *curpath = argv[0];
     lua_State *L = luaL_newstate();
     luaL_openlibs(L);
 
-    init_debugger(L, root);
+    init_debugger(L, curpath);
     start_debugger(L);
 
     free_debugger(L);
