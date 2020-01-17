@@ -1,7 +1,7 @@
 {
-	"name": "lua5.3-debugger",
-	"displayName": "lua5.3 debugger",
-	"description": "A debugger for lua5.3",
+	"name": "vsclua-debugger",
+	"displayName": "vsclua debugger",
+	"description": "A debugger for lua 5.3",
 	"version": "0.9.0",
 	"publisher": "colin",
 	"author": {
@@ -21,8 +21,17 @@
 	"categories": [
 		"Debuggers"
 	],
+	"private": true,
+	"scripts": {
+	},
+	"main": "./extension.js",
+	"activationEvents": [
+		"onCommand:extension.helloWorld",
+		"onDebug"
+	],
 	"keywords": [
-		"debugger", "lua"
+		"debugger",
+		"lua"
 	],
 	"devDependencies": {
 		"@types/glob": "^7.1.1",
@@ -36,6 +45,12 @@
 		"vscode-test": "^1.2.2"
 	},
 	"contributes": {
+		"commands": [
+			{
+				"command": "extension.helloWorld",
+				"title": "Hello World"
+			} 
+		],
 		"breakpoints": [
 			{
 				"language": "lua"
@@ -46,14 +61,16 @@
 				"type": "lua",
 				"label": "vsclua debugger",
 				"languages": [
-                    "lua"
+					"lua"
 				],
-				"program": "/home/cogame/colin/mylib/vscluadbg/vscext/bin/linux/vscluadbg",
+				"linux": {
+					"program": "./bin/linux/vscluadbg"
+				},
 				"windows": {
 					"program": "./bin/win/vscluadbg.exe"
 				},
 				"osx": {
-					"program": "./bin/osx/vscluadbg"
+					"program": "./bin/macosx/vscluadbg"
 				},
 				"initialConfigurations": [
 					{
