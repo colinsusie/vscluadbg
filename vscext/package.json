@@ -26,7 +26,6 @@
 	},
 	"main": "./extension.js",
 	"activationEvents": [
-		"onCommand:extension.helloWorld",
 		"onDebug"
 	],
 	"keywords": [
@@ -45,12 +44,6 @@
 		"vscode-test": "^1.2.2"
 	},
 	"contributes": {
-		"commands": [
-			{
-				"command": "extension.helloWorld",
-				"title": "Hello World"
-			} 
-		],
 		"breakpoints": [
 			{
 				"language": "lua"
@@ -77,10 +70,11 @@
 						"name": "vsclua debugger",
 						"type": "lua",
 						"request": "launch",
-						"program": "${workspaceRoot}/main.lua",
+						"program": "${workspaceFolder}/main.lua",
 						"stopOnEntry": false,
-						"luaPath": "${workspaceRoot}/?.lua",
-						"cPath": "${workspaceRoot}/?.so"
+						"cwd": "${workspaceFolder}",
+						"luaPath": "${workspaceFolder}/?.lua",
+						"cPath": "${workspaceFolder}/?.so"
 					}
 				],
 				"configurationAttributes": {
@@ -102,12 +96,12 @@
 							"luaPath": {
 								"type": "string",
 								"description": "Search path for Lua programs",
-								"default": "${workspaceRoot}/?.lua"
+								"default": "${workspaceFolder}/?.lua"
 							},
 							"cPath": {
 								"type": "string",
 								"description": "Search path for native libraries",
-								"default": "${workspaceRoot}/?.so"
+								"default": "${workspaceFolder}/?.so"
 							}
 						}
 					}

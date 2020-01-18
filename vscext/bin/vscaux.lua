@@ -39,14 +39,19 @@ function vscaux.recv_request()
     local header = input:read()
     debuglog(header)
     if header:find("Content-Length: ", 1, true) then
-        if input:read() then
+        local rd = input:read()
+        debuglog(rd)
+        if rd then
             local len = tonumber(header:match("(%d+)"))
             local sreq = input:read(len)
-            debuglog(seq)
+            debuglog(sreq)
             if sreq then
                 local ok, req = pcall(cjson.decode, sreq)
                 if ok then
+                    debuglog("\n")
                     return req
+                else
+                    debuglog(req)
                 end
             end
         end

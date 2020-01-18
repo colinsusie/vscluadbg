@@ -94,11 +94,12 @@ static int runscript(lua_State *dL) {
 static int getstackframes(lua_State *dL) {
     luaL_checktype(dL, 1, LUA_TLIGHTUSERDATA);
     lua_State *L = lua_touserdata(dL, 1);
+    int maxlv = luaL_checkinteger(dL, 2);
 
     lua_newtable(dL);    // [t]
     int level = 0;
     lua_Debug ar;
-    while (level < 99 && lua_getstack(L, level, &ar)) {
+    while (level < maxlv && lua_getstack(L, level, &ar)) {
         lua_getinfo(L, "Slnt", &ar);
         lua_newtable(dL);  // [t|t2]
         // id
@@ -117,8 +118,10 @@ static int getstackframes(lua_State *dL) {
         // source
         if (islua || ismain) {
             if (ar.source[0] == '@') {
-                lua_pushstring(dL, ar.source+1);
-                lua_setfield(dL, -2, "source");  // [t|t2]
+                lua_newtable(dL);  // [t|t2|t3]
+                lua_pushstring(dL, ar.source+1);  // [t|t2|t3|path]
+                lua_setfield(dL, -2, "path");     // [t|t2|t3]
+                lua_setfield(dL, -2, "source");   // [t|t2]
             }
         }
         // line

@@ -19,6 +19,8 @@ local ST_STEP_IN = 5    -- 单步进入
 local ST_STEP_OUT = 6   -- 单步跳出
 local ST_TERMINATED = 10 -- 终止状态 
 
+local THREAD_ID = 1     -- 线程ID
+
 -- 调试器
 debugger = {
     state = ST_BIRTH,   -- 状态
@@ -47,6 +49,7 @@ local function eprint(...)
     local msg = table.concat(ls)
     io.stderr:write(msg)
     io.stderr:flush()
+    debuglog(msg)
 end
 
 -- 取函数名
@@ -105,10 +108,15 @@ function reqfuncs.initialize(coinfo, req)
     debugger.state = ST_INITED
     -- 回应初始化
     vscaux.send_response(req.command, req.seq, {
-        supportsConfigurationDoneRequest = 1,
+        supportsConfigurationDoneRequest = true,
     })
     -- 初始化完毕事件
     vscaux.send_event("initialized")
+    -- 
+    vscaux.send_event("output", {
+        category = "console",
+        output = "Lua Debugger started!",
+    })
 end
 
 function reqfuncs.setBreakpoints(coinfo, req)
@@ -123,7 +131,7 @@ function reqfuncs.setBreakpoints(coinfo, req)
     for _, bp in ipairs(args.breakpoints) do
         bps[#bps+1] = {
             verified = true,
-            source = src,
+            source = {path = src},
             line = bp.line,
         }
     end
@@ -131,6 +139,10 @@ function reqfuncs.setBreakpoints(coinfo, req)
     vscaux.send_response(req.command, req.seq, {
         breakpoints = bps,
     })
+end
+
+function reqfuncs.setExceptionBreakpoints(coinfo, req)
+    vscaux.send_response(req.command, req.seq)
 end
 
 function reqfuncs.configurationDone(coinfo, req)
@@ -185,6 +197,7 @@ function reqfuncs.launch(coinfo, req)
     -- 运行脚本
     debugger.isattach = false
     debugger.state = req.arguments.stopOnEntry and ST_STEP_IN or ST_RUNNING
+    -- TODO: run failed log
     dbgaux.runscript(program, args)
     -- 运行完毕
     vscaux.send_event("terminated")
@@ -231,7 +244,7 @@ end
 function reqfuncs.threads(coinfo, req)
     vscaux.send_response(req.command, req.seq, {
         threads = {
-            {id = 1},
+            {id = THREAD_ID, name = "mainthread"},
         }
     })
 end
@@ -244,7 +257,8 @@ function reqfuncs.pause(coinfo, req)
 end
 
 function reqfuncs.stackTrace(coinfo, req)
-    local frames = dbgaux.getstackframes(coinfo.co)
+    local levels = req.arguments.levels or 20
+    local frames = dbgaux.getstackframes(coinfo.co, levels)
     vscaux.send_response(req.command, req.seq, {
         stackFrames = frames
     })
@@ -294,7 +308,6 @@ end
 -----------------------------------------------------------------------------------
 -- 全局函数
 function on_start()
-    debugger.log = io.open("/home/cogame/colin/mylib/run.log", 'w+')
     debuglog("on_start\n")
 end
 
@@ -392,6 +405,7 @@ function on_line(co, source, what, name, line)
             coinfo.plevel = -1
             vscaux.send_event("stopped", {
                 reason = reason,
+                threadId = THREAD_ID,
             })
             print(string.format("%s:%s(%s)", source, line, get_funcname(source, what, name)))
         end
@@ -430,6 +444,11 @@ function on_output(str, source, line)
 end
 
 function debuglog(msg)
+    -- 正式版去掉下面的注释
+    -- do return end
+    if not debugger.log then
+        debugger.log = io.open("/Users/colin/mylib/run.log", 'w')
+    end 
     debugger.log:write(tostring(msg))
     debugger.log:flush()
 end
