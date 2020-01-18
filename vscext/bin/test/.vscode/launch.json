@@ -9,7 +9,8 @@
 			"type": "lua",
 			"request": "launch",
 			"program": "${workspaceFolder}/test.lua",
-			"stopOnEntry": false,
+			"args": ["hello", "world"],
+			"stopOnEntry": true,
 			"luaPath": "${workspaceFolder}/?.lua",
 			"cPath": "${workspaceFolder}/?.so"
 		}

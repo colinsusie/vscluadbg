@@ -67,5 +67,6 @@ end
 -- local test2 = require "test2"
 -- start()
 
+print(...)
 print("Hello world")
 main()

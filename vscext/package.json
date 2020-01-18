@@ -71,6 +71,7 @@
 						"type": "lua",
 						"request": "launch",
 						"program": "${workspaceFolder}/main.lua",
+						"args": [],
 						"stopOnEntry": false,
 						"cwd": "${workspaceFolder}",
 						"luaPath": "${workspaceFolder}/?.lua",
@@ -85,8 +86,13 @@
 						"properties": {
 							"program": {
 								"type": "string",
-								"description": "Lua 5.3 to debug - set this to the path of the script",
+								"description": "set this to the path of the script",
 								"default": "main.lua"
+							},
+							"args": {
+								"type": "array",
+								"description": "script arguments",
+								"default": []
 							},
 							"stopOnEntry": {
 								"type": "boolean",
