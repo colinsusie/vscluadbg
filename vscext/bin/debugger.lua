@@ -35,6 +35,8 @@ debugger = {
     obuffer = "",       -- 输出的缓冲
     osource = nil,      -- 输出的代码
     oline = nil,        -- 输出的行
+
+    strackFrames = nil, -- 当前的栈列表
 }
 
 -----------------------------------------------------------------------------------
@@ -282,6 +284,8 @@ end
 function reqfuncs.stackTrace(coinfo, req)
     local levels = req.arguments.levels or 20
     local frames = dbgaux.getstackframes(coinfo.co, levels)
+    -- 保存起来
+    debugger.strackFrames = frames
     vscaux.send_response(req.command, req.seq, {
         stackFrames = frames
     })
@@ -294,19 +298,32 @@ end
 function reqfuncs.scopes(coinfo, req)
     dbgaux.startframe(coinfo.co);
     local frameId = req.arguments.frameId
+    local source = nil
+    local line = nil
+    -- if debugger.strackFrames and debugger.strackFrames[frameId+1] then
+    --     frame = debugger.strackFrames[frameId+1]
+    --     source = frame.source
+    --     line = frame.line
+    -- end
     vscaux.send_response(req.command, req.seq, {
         scopes = {
             {
                 name = "Arguments",
                 variablesReference = encode_varref(1, frameId),
+                -- source = source,
+                -- line = line,
             },
             {
                 name = "Locals",
                 variablesReference = encode_varref(2, frameId),
+                -- source = source,
+                -- line = line,
             },
             {
                 name = "Upvalues",
                 variablesReference = encode_varref(3, frameId),
+                -- source = source,
+                -- line = line,
             },
         }
     })
