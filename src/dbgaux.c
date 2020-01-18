@@ -121,6 +121,9 @@ static int getstackframes(lua_State *dL) {
             lua_pushstring(dL, ar.source+1);  // [t|t2|t3|path]
             lua_setfield(dL, -2, "path");     // [t|t2|t3]
             lua_setfield(dL, -2, "source");   // [t|t2]
+            lua_pushinteger(dL, 1);           // [t|t2|1]
+            lua_setfield(dL, -2, "column");   // [t|t2]
+
         } else {
             lua_newtable(dL);  // [t|t2|t3]
             lua_pushstring(dL, "deemphasize");          // [t|t2|t3|path]
