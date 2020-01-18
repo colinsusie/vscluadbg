@@ -7,9 +7,20 @@ local function sfunc()
     ssfunc()
 end
 
-local function func(a, b, ...)
-    local c = a + 1
-    local d = b + 1
+local function func(...)
+    local arg = {...}
+    -- for k, v in ipairs(arg) do
+    --     print(k, v)
+    -- end
+    local idx = -1
+    while true do
+        local name, value = debug.getlocal(1, idx)
+        if not name then break end
+        print(name, value)
+        idx = idx - 1
+    end
+    local c = 1
+    local d = true
     local s = "abc"
     local t = {
         name = "time",
@@ -18,12 +29,13 @@ local function func(a, b, ...)
             print("hello")
         end
     }
+    print(t.name)
     sfunc()
     return c + d
 end
 
 local function main()
-    pcall(func, 10, 20, "hello", true, function()end)
+    pcall(func, 10, 20, "hello", true)
     local a = 1
     local b = 2
 end
@@ -55,5 +67,5 @@ end
 -- local test2 = require "test2"
 -- start()
 
-print(...)
+print("Hello world")
 main()

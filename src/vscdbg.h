@@ -19,5 +19,6 @@ void vscdbg_free_thread(lua_State *L, lua_State *L1);
 
 void vscdbg_handle_request(vscdbg_t *dbg, lua_State *L);
 void vscdbg_on_output(vscdbg_t *dbg, const char *str, size_t sz, const char *source, int line);
+void vscdbg_debuglog(vscdbg_t *dbg, const char *fmt, ...);
 
 #endif  // __VSCDBG_H__

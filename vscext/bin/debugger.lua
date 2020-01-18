@@ -197,8 +197,13 @@ function reqfuncs.launch(coinfo, req)
     -- 运行脚本
     debugger.isattach = false
     debugger.state = req.arguments.stopOnEntry and ST_STEP_IN or ST_RUNNING
-    -- TODO: run failed log
-    dbgaux.runscript(program, args)
+    local ok, msg = dbgaux.runscript(program, args)
+    if not ok then
+        vscaux.send_event("output", {
+            category = "console",
+            output = msg,
+        })
+    end
     -- 运行完毕
     vscaux.send_event("terminated")
     return true
@@ -434,7 +439,7 @@ function on_output(str, source, line)
         vscaux.send_event("output", {
             category = "stdout",
             output = debugger.obuffer,
-            source = debugger.osource,
+            source = {path = debugger.osource},
             line = debugger.oline,
         })
         debugger.obuffer = ""
@@ -443,12 +448,19 @@ function on_output(str, source, line)
     end
 end
 
-function debuglog(msg)
+function debuglog(msg, outvsc)
     -- 正式版去掉下面的注释
     -- do return end
     if not debugger.log then
-        debugger.log = io.open("/Users/colin/mylib/run.log", 'w')
+        debugger.log = io.open("/home/cogame/colin/mylib/run.log", 'w')
     end 
     debugger.log:write(tostring(msg))
     debugger.log:flush()
+    -- 输出到VSC
+    if outvsc then
+        vscaux.send_event("output", {
+            category = "console",
+            output = msg,
+        })
+    end
 end

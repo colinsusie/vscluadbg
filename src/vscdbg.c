@@ -153,10 +153,21 @@ void vscdbg_free_thread(lua_State *L, lua_State *L1) {
 // 处理客户端请求
 void vscdbg_handle_request(vscdbg_t *dbg, lua_State *L) {
     if (lua_getglobal(dbg->dL, HANDLE_REQUEST) == LUA_TFUNCTION) {
-        // lua_pushlightuserdata(dbg->dL, L);
         check_call(dbg->dL, lua_pcall(dbg->dL, 0, 0, 0), HANDLE_REQUEST);
     } else {
         fprintf(stderr, "%s must be a function\n", HANDLE_REQUEST);
+    }
+}
+
+// 输出调试日志
+void vscdbg_debuglog(vscdbg_t *dbg, const char *fmt, ...) {
+    if (lua_getglobal(dbg->dL, "debuglog") == LUA_TFUNCTION) {
+        va_list argp;
+        va_start(argp, fmt);
+        lua_pushvfstring(dbg->dL, fmt, argp);
+        va_end(argp);
+        lua_pushboolean(dbg->dL, 1);
+        check_call(dbg->dL, lua_pcall(dbg->dL, 2, 0, 0), "debuglog");
     }
 }
 

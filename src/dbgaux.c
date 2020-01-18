@@ -116,13 +116,16 @@ static int getstackframes(lua_State *dL) {
             lua_pushstring(dL, "?");
         lua_setfield(dL, -2, "name");  // [t|t2]
         // source
-        if (islua || ismain) {
-            if (ar.source[0] == '@') {
-                lua_newtable(dL);  // [t|t2|t3]
-                lua_pushstring(dL, ar.source+1);  // [t|t2|t3|path]
-                lua_setfield(dL, -2, "path");     // [t|t2|t3]
-                lua_setfield(dL, -2, "source");   // [t|t2]
-            }
+        if ((islua || ismain) && ar.source[0] == '@') {
+            lua_newtable(dL);  // [t|t2|t3]
+            lua_pushstring(dL, ar.source+1);  // [t|t2|t3|path]
+            lua_setfield(dL, -2, "path");     // [t|t2|t3]
+            lua_setfield(dL, -2, "source");   // [t|t2]
+        } else {
+            lua_newtable(dL);  // [t|t2|t3]
+            lua_pushstring(dL, "deemphasize");          // [t|t2|t3|path]
+            lua_setfield(dL, -2, "presentationHint");   // [t|t2|t3]
+            lua_setfield(dL, -2, "source");             // [t|t2]
         }
         // line
         if (ar.currentline > 0) {
@@ -332,10 +335,12 @@ static void get_func_params(lua_State *dL, lua_State *L, lua_Debug *ar) {
             }
         }
         // 可变参数
+        char varname[20] = {0};
         for (i = -1; ;--i) {
             const char *name = lua_getlocal(L, ar, i);
             if (name) {     // <a>
-                add_var_info(dL, L, name, idx++, lua_gettop(L));   // [t]
+                sprintf(varname, "vararg%d", -i);
+                add_var_info(dL, L, varname, idx++, lua_gettop(L));   // [t]
             } else {
                 break;
             }
