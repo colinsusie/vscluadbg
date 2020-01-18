@@ -83,12 +83,23 @@ local function check_call_filter(source, what)
 end
 
 -- 检查断点是否命中
-local function breakpoints_hitest(source, line)
+local function breakpoints_hittest(source, line)
     source = straux.startswith(source, "@") and source:sub(2) or source
     local bps = debugger.breakpoints[source]
     if bps then
         for _, bp in ipairs(bps) do
             if bp.line == line then
+                -- TODO: 条件断点
+                -- 日志断点
+                if bp.logMessage then
+                    vscaux.send_event("output", {
+                        category = "console",
+                        output = bp.logMessage,
+                        source = {path = source},
+                        line = line,
+                    })
+                    return false;
+                end
                 return true
             end
         end
@@ -127,15 +138,22 @@ function reqfuncs.setBreakpoints(coinfo, req)
     -- 保存断点 和回应断点
     args = req.arguments
     local src = args.source.path
+    local bpinfos = {}
     local bps = {}
     for _, bp in ipairs(args.breakpoints) do
+        bpinfos[#bpinfos+1] = {
+            source = {path = src},
+            line = bp.line,
+            logMessage = bp.logMessage,
+            condition = bp.condition,
+        }
         bps[#bps+1] = {
             verified = true,
             source = {path = src},
             line = bp.line,
         }
     end
-    debugger.breakpoints[src] = bps
+    debugger.breakpoints[src] = bpinfos
     vscaux.send_response(req.command, req.seq, {
         breakpoints = bps,
     })
@@ -386,7 +404,7 @@ function on_line(co, source, what, name, line)
        state == ST_STEP_IN or state == ST_STEP_OUT then
         local reason;
         local hit = false
-        if breakpoints_hitest(source, line) then     -- 断点命中测试总是在最前面
+        if breakpoints_hittest(source, line) then     -- 断点命中测试总是在最前面
             reason = "breakpoint"
             hit = true
         elseif state == ST_STEP_OVER then
