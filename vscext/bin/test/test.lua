@@ -40,33 +40,5 @@ local function main()
     local b = 2
 end
 
-
--- local function hook(event)
---     local info = debug.getinfo(2, "Snlt")
---     print(info.source, info.what, info.name, info.namewhat, info.currentline)
--- end
--- debug.sethook(hook, 'c')
-
-
--- local function sfun()
--- end
-
--- function start()
---     sfun()
---     print(debug.traceback())
---     return 29
--- end
-
--- local s = [[
---     local a = 1
---     local b = 2
---     return a + b
--- ]]
--- local f = load(s, "@test")
--- f()
--- local test2 = require "test2"
--- start()
-
-print(...)
 print("Hello world")
 main()

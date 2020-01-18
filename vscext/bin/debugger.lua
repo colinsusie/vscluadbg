@@ -91,7 +91,6 @@ local function breakpoints_hittest(source, line)
     if bps then
         for _, bp in ipairs(bps) do
             if bp.line == line then
-                -- TODO: 条件断点
                 -- 日志断点
                 if bp.logMessage then
                     vscaux.send_event("output", {
@@ -114,10 +113,6 @@ local reqfuncs = {}
 local seq = 1
 
 function reqfuncs.initialize(coinfo, req)
-    if debugger.state ~= ST_BIRTH then
-        eprint("initialize- state error", debugger.state)
-        return true
-    end
     debugger.state = ST_INITED
     -- 回应初始化
     vscaux.send_response(req.command, req.seq, {
@@ -133,10 +128,6 @@ function reqfuncs.initialize(coinfo, req)
 end
 
 function reqfuncs.setBreakpoints(coinfo, req)
-    if debugger.state == ST_BIRTH or debugger.state == ST_TERMINATED then
-        eprint("setBreakpoints - state error", debugger.state)
-        return true
-    end
     -- 保存断点 和回应断点
     args = req.arguments
     local src = args.source.path
@@ -166,18 +157,10 @@ function reqfuncs.setExceptionBreakpoints(coinfo, req)
 end
 
 function reqfuncs.configurationDone(coinfo, req)
-    if debugger.state == ST_BIRTH or debugger.state == ST_TERMINATED then
-        eprint("setBreakpoints - state error", debugger.state)
-        return true
-    end
     vscaux.send_response(req.command, req.seq)
 end
 
 function reqfuncs.launch(coinfo, req)
-    if debugger.state ~= ST_INITED then
-        eprint("launch - state error", debugger.state)
-        return true
-    end
     -- noDebug
     debugger.nodebug = req.arguments.noDebug
     -- 设置lua path
@@ -230,10 +213,6 @@ function reqfuncs.launch(coinfo, req)
 end
 
 function reqfuncs.attach(coinfo, req)
-    if debugger.state ~= ST_INITED then
-        eprint("attach - state error", debugger.state)
-        return true
-    end
     debugger.isattach = true
     debugger.state = req.arguments.stopOnEntry and ST_STEP_IN or ST_RUNNING
     vscaux.send_response(req.command, req.seq)
@@ -287,7 +266,8 @@ function reqfuncs.stackTrace(coinfo, req)
     -- 保存起来
     debugger.strackFrames = frames
     vscaux.send_response(req.command, req.seq, {
-        stackFrames = frames
+        stackFrames = frames,
+        totalFrames = #frames,
     })
 end
 
@@ -298,32 +278,19 @@ end
 function reqfuncs.scopes(coinfo, req)
     dbgaux.startframe(coinfo.co);
     local frameId = req.arguments.frameId
-    local source = nil
-    local line = nil
-    -- if debugger.strackFrames and debugger.strackFrames[frameId+1] then
-    --     frame = debugger.strackFrames[frameId+1]
-    --     source = frame.source
-    --     line = frame.line
-    -- end
     vscaux.send_response(req.command, req.seq, {
         scopes = {
             {
                 name = "Arguments",
                 variablesReference = encode_varref(1, frameId),
-                -- source = source,
-                -- line = line,
             },
             {
                 name = "Locals",
                 variablesReference = encode_varref(2, frameId),
-                -- source = source,
-                -- line = line,
             },
             {
                 name = "Upvalues",
                 variablesReference = encode_varref(3, frameId),
-                -- source = source,
-                -- line = line,
             },
         }
     })
@@ -342,13 +309,25 @@ end
 
 function reqfuncs.disconnect(coinfo, req)
     vscaux.send_response(req.command, req.seq)
-    dbgaux.exit()
+    debugger.state = ST_TERMINATED
+    return true
 end
 
 -----------------------------------------------------------------------------------
 -- 全局函数
 function on_start()
     debuglog("on_start\n")
+end
+
+function on_stop()
+    vscaux.send_event("output", {
+        category = "console",
+        output = "Lua Debugger stop!",
+    })
+    vscaux.send_event("exited", {
+        exitCode = 0,
+    })
+    debuglog("on_stop\n")
 end
 
 -- 开始hook一个线程
@@ -372,6 +351,9 @@ end
 -- 处理请求
 function handle_request()
     while true do
+        if debugger.state == ST_TERMINATED then
+            break
+        end
         local req = vscaux.recv_request()
         if not req or not req.command then
             break
@@ -447,7 +429,6 @@ function on_line(co, source, what, name, line)
                 reason = reason,
                 threadId = THREAD_ID,
             })
-            print(string.format("%s:%s(%s)", source, line, get_funcname(source, what, name)))
         end
     end
 
@@ -487,7 +468,7 @@ function debuglog(msg, outvsc)
     -- 正式版去掉下面的注释
     -- do return end
     if not debugger.log then
-        debugger.log = io.open("/home/cogame/colin/mylib/run.log", 'w')
+        debugger.log = io.open("/Users/colin/mylib/run.log", 'w')
     end 
     debugger.log:write(tostring(msg))
     debugger.log:flush()

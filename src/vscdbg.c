@@ -6,6 +6,7 @@
 static const char *LUA_DEBUGGER = "/../debugger.lua";
 // 全局函数
 static const char *ON_START = "on_start";
+static const char *ON_STOP = "on_stop";
 static const char *ON_NEW_THREAD = "on_new_thread";
 static const char *ON_FREE_THREAD = "on_free_thread";
 static const char *ON_CALL = "on_call";
@@ -246,6 +247,12 @@ vscdbg_t* vscdbg_new(lua_State *L, const char *curpath) {
 
 // 释放DBG
 void* vscdbg_free(vscdbg_t *dbg) {
+    if (lua_getglobal(dbg->dL, ON_STOP) == LUA_TFUNCTION) {
+        check_call(dbg->dL, lua_pcall(dbg->dL, 0, 0, 0), ON_STOP);
+    } else {
+        fprintf(stderr, "%s must be a function\n", ON_STOP);
+    }
+
     lua_close(dbg->dL);
     free(dbg);
     return NULL;
