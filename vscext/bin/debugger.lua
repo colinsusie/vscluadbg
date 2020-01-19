@@ -117,13 +117,14 @@ function reqfuncs.initialize(coinfo, req)
     -- 回应初始化
     vscaux.send_response(req.command, req.seq, {
         supportsConfigurationDoneRequest = true,
+        supportsSetVariable = false;
     })
     -- 初始化完毕事件
     vscaux.send_event("initialized")
     -- 
     vscaux.send_event("output", {
         category = "console",
-        output = "Lua Debugger started!",
+        output = "Lua Debugger start!\n",
     })
 end
 
@@ -204,7 +205,7 @@ function reqfuncs.launch(coinfo, req)
     if not ok then
         vscaux.send_event("output", {
             category = "console",
-            output = msg,
+            output = string.format("%s\n", msg),
         })
     end
     -- 运行完毕
@@ -310,7 +311,11 @@ end
 function reqfuncs.disconnect(coinfo, req)
     vscaux.send_response(req.command, req.seq)
     debugger.state = ST_TERMINATED
-    return true
+    vscaux.send_event("output", {
+        category = "console",
+        output = "Lua Debugger stop!\n",
+    })
+    dbgaux.exit()
 end
 
 -----------------------------------------------------------------------------------
@@ -322,7 +327,7 @@ end
 function on_stop()
     vscaux.send_event("output", {
         category = "console",
-        output = "Lua Debugger stop!",
+        output = "Lua Debugger stop!\n",
     })
     vscaux.send_event("exited", {
         exitCode = 0,
@@ -468,7 +473,7 @@ function debuglog(msg, outvsc)
     -- 正式版去掉下面的注释
     -- do return end
     if not debugger.log then
-        debugger.log = io.open("/Users/colin/mylib/run.log", 'w')
+        debugger.log = io.open("run.log", 'w')
     end 
     debugger.log:write(tostring(msg))
     debugger.log:flush()

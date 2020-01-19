@@ -9,3 +9,7 @@ Lua 5.3 Debug Adapter for VSCode
 - [x] print redirect to vscode console
 - [ ] change value of variables
 - [ ] evaluate expressions
+
+# snapshot
+
+![](vscext/images/snapshot.png)
