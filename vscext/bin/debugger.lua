@@ -506,9 +506,9 @@ end
 
 function debuglog(msg, outvsc)
     -- 正式版去掉下面的注释
-    -- do return end
+    do return end
     if not debugger.log then
-        debugger.log = io.open("run.log", 'w')
+        debugger.log = io.open("/Users/colin/mylib/vscluadbg/run.log", 'w')
     end 
     debugger.log:write(tostring(msg))
     debugger.log:flush()
