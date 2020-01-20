@@ -60,7 +60,6 @@ static int runscript(lua_State *dL) {
     // 加载脚本
     int err = luaL_loadfile(L, fn);     // <f>
     if (err) {
-        fprintf(stderr, "%s\n", lua_tostring(L, -1));
         lua_pushboolean(dL, 0);
         lua_pushstring(dL, lua_tostring(L, -1));
         lua_pop(L, 1);  // <>
@@ -79,9 +78,8 @@ static int runscript(lua_State *dL) {
     // 调用  <f|a1|a2..>
     err = lua_pcall(L, narg, LUA_MULTRET, 0);
     if (err) {
-        fprintf(stderr, "%s\n", lua_tostring(L, -1));
         lua_pushboolean(dL, 0);
-        lua_pushstring(dL, lua_tostring(L, -1));
+        lua_pushstring(dL, luaL_tolstring(L, -1, NULL));
         return 2;
     }
 
@@ -295,7 +293,7 @@ static int push_varref(lua_State *dL, lua_State *L, int stkidx) {
     }
 }
 
-static int startframe(lua_State *dL) {
+static int clearvarcache(lua_State *dL) {
     luaL_checktype(dL, 1, LUA_TLIGHTUSERDATA);
     lua_State *L = lua_touserdata(dL, 1);
     clear_var_cache(L);
@@ -452,6 +450,68 @@ static int getvars(lua_State *dL) {
     return 2;
 }
 
+// 表达式求值
+// (co, expr, level) => result
+static int evalkey = 0;
+static const char *LUA_EVAL = "/../injectcode.lua";
+static int evaluate(lua_State *dL) {
+    luaL_checktype(dL, 1, LUA_TLIGHTUSERDATA);
+    lua_State *L = lua_touserdata(dL, 1);
+    luaL_checktype(dL, 2, LUA_TSTRING);
+    int level = luaL_checkinteger(dL, 3);
+    vscdbg_t *dbg = vscdbg_get_from_state(L);
+
+    lua_rawgetp(L, LUA_REGISTRYINDEX, &evalkey);  // <eval>
+    if (!lua_isfunction(L, -1)) {
+        lua_pop(L, 1);  // <>
+        char path[512];
+        strcpy(path, dbg->curpath);
+        strcat(path, LUA_EVAL);
+        int error = luaL_dofile(L, path);
+        if (error) {    // <err>
+            lua_pushboolean(dL, 0); // [false]
+            lua_pushstring(dL, luaL_tolstring(L, -1, NULL));    // [false|estr]
+            lua_pop(L, 1);  // <>
+            return 2;
+        } else {    // <eval>
+            lua_pushvalue(L, -1); // <eval|eval>
+            lua_rawsetp(L, LUA_REGISTRYINDEX, &evalkey);    // <eval>
+        }
+    }
+    lua_pushvalue(L, -1); // <eval|eval>
+
+    // first, try: "return <expr>"
+    lua_pushfstring(L, "return %s", lua_tostring(dL, 2));   // <eval|eval|expr>
+    lua_pushthread(L);  // <eval|eval|expr|co>
+    lua_pushinteger(L, level); // <eval|eval|expr|co|evel>
+    lua_call(L, 3, 2);  // <eval|boolean|res>
+    if (lua_toboolean(L, -2)) {
+        lua_pushboolean(dL, 1); // [true]
+        lua_pushstring(dL, luaL_tolstring(L, -1, NULL));    // [true|res]
+        lua_pop(L, 3);  // <>
+        return 2;
+    } else {
+        lua_pop(L, 2);  // <eval>
+    }
+
+    // second, try: "expr"
+    lua_pushfstring(L, "%s", lua_tostring(dL, 2));   // <eval|expr>
+    lua_pushthread(L);  // <eval|expr|co>
+    lua_pushinteger(L, level); // <eval|expr|co|evel>
+    lua_call(L, 3, 2);  // <eval|boolean|res>
+    if (lua_toboolean(L, -2)) {
+        lua_pushboolean(dL, 1); // [true]
+        lua_pushstring(dL, luaL_tolstring(L, -1, NULL));    // [true|res]
+        lua_pop(L, 3);  // <>
+        return 2;
+    } else {
+        lua_pushboolean(dL, 0); // [false]
+        lua_pushstring(dL, luaL_tolstring(L, -1, NULL));    // [false|estr]
+        lua_pop(L, 3);  // <>
+        return 2;
+    }
+}
+
 // 停止
 static int exitprogram(lua_State *dL) {
     exit(0);
@@ -461,8 +521,9 @@ static const luaL_Reg lib[] = {
     {"addpath", addpath},
     {"runscript", runscript},
     {"getstackframes", getstackframes},
-    {"startframe", startframe},
+    {"clearvarcache", clearvarcache},
     {"getvars", getvars},
+    {"evaluate", evaluate},
     {"exit", exitprogram},
     {NULL, NULL},
 };

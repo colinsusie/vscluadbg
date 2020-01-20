@@ -67,6 +67,20 @@ local function func_co2()
     print(ok, msg)
 end
 
+local function func_cond()
+    for i = 1, 5 do
+        print(i)
+    end
+    local t = {
+        name = "tom",
+        age = 2,
+        male = true,
+    }
+    for k, v in pairs(t) do
+        print(k, v)
+    end
+end
+
 local function entry()
     -- 普通函数调用
     func(10, 20, "hello", true)
@@ -81,6 +95,8 @@ local function entry()
     func_co();
     -- 测试协程报错的情况
     func_co2();
+    -- 测试条件断点
+    func_cond();
 end
 
 print(...)

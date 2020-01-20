@@ -29,30 +29,16 @@ debugger = {
     nodebug = false,    -- 不调试
     breakpoints = {},   -- 断点列表
     isattach = false,   -- 是否attach状态
-    ispause = false,    -- 是否是主动暂停状态
+    pausereason = nil,   -- 暂停原因
 
     log = nil,          -- 测试代码
     obuffer = "",       -- 输出的缓冲
     osource = nil,      -- 输出的代码
     oline = nil,        -- 输出的行
-
-    strackFrames = nil, -- 当前的栈列表
 }
 
 -----------------------------------------------------------------------------------
 -- 辅助函数
-
--- 打印错误日志
-local function eprint(...)
-    local ls = {...}
-    for i = 1, #ls do
-        ls[i] = tostring(ls[i])
-    end
-    local msg = table.concat(ls)
-    io.stderr:write(msg)
-    io.stderr:flush()
-    debuglog(msg)
-end
 
 -- 取函数名
 local function get_funcname(source, what, name)
@@ -84,27 +70,47 @@ local function check_call_filter(source, what)
     return false
 end
 
+local function check_condition(coinfo, cond)
+    if not cond or cond == "" then
+        return true
+    end
+    local ok, res = dbgaux.evaluate(coinfo.co, cond, 0)
+    if not ok then
+        return true
+    end
+    return res ~= "false" and res ~= "nil"
+end
+
 -- 检查断点是否命中
-local function breakpoints_hittest(source, line)
+local function breakpoints_hittest(coinfo, source, line)
     source = straux.startswith(source, "@") and source:sub(2) or source
     local bps = debugger.breakpoints[source]
     if bps then
         for _, bp in ipairs(bps) do
             if bp.line == line then
-                -- 日志断点
-                if bp.logMessage then
-                    vscaux.send_event("output", {
-                        category = "console",
-                        output = bp.logMessage,
-                        source = {path = source},
-                        line = line,
-                    })
-                    return false;
+                -- 检查条件
+                if check_condition(coinfo, bp.condition) then
+                    -- 检查忽略命中次数
+                    bp.currHitCount = bp.currHitCount + 1
+                    if bp.currHitCount > bp.hitCount then
+                        bp.currHitCount = 0
+                        -- 日志断点
+                        if bp.logMessage then
+                            vscaux.send_event("output", {
+                                category = "console",
+                                output = bp.logMessage,
+                                source = {path = source},
+                                line = line,
+                            })
+                            return false
+                        end
+                        return true
+                    end
                 end
-                return true
             end
         end
     end
+    return false
 end
 
 -----------------------------------------------------------------------------
@@ -117,7 +123,9 @@ function reqfuncs.initialize(coinfo, req)
     -- 回应初始化
     vscaux.send_response(req.command, req.seq, {
         supportsConfigurationDoneRequest = true,
-        supportsSetVariable = false;
+        supportsSetVariable = false,
+        supportsConditionalBreakpoints = true,
+        supportsHitConditionalBreakpoints = true,
     })
     -- 初始化完毕事件
     vscaux.send_event("initialized")
@@ -126,6 +134,18 @@ function reqfuncs.initialize(coinfo, req)
         category = "console",
         output = "Lua Debugger start!\n",
     })
+end
+
+local function calc_hitcount(hitexpr)
+    if not hitexpr then return 0 end
+    
+    local f, msg = load("return " .. hitexpr, "=hitexpr")
+    if not f then return 0 end
+    
+    local ok, ret = pcall(f)
+    if not ok then return 0 end
+    
+    return tonumber(ret) or 0
 end
 
 function reqfuncs.setBreakpoints(coinfo, req)
@@ -140,6 +160,8 @@ function reqfuncs.setBreakpoints(coinfo, req)
             line = bp.line,
             logMessage = bp.logMessage,
             condition = bp.condition,
+            hitCount = calc_hitcount(bp.hitCondition),
+            currHitCount = 0,
         }
         bps[#bps+1] = {
             verified = true,
@@ -201,6 +223,7 @@ function reqfuncs.launch(coinfo, req)
     -- 运行脚本
     debugger.isattach = false
     debugger.state = req.arguments.stopOnEntry and ST_STEP_IN or ST_RUNNING
+    debugger.pausereason = "entry"
     local ok, msg = dbgaux.runscript(program, args)
     if not ok then
         vscaux.send_event("output", {
@@ -256,7 +279,7 @@ end
 
 function reqfuncs.pause(coinfo, req)
     debugger.state = ST_STEP_IN
-    debugger.ispause = true
+    debugger.pausereason = "pause"
     coinfo.plevel = coinfo.level
     vscaux.send_response(req.command, req.seq)
 end
@@ -265,20 +288,19 @@ function reqfuncs.stackTrace(coinfo, req)
     local levels = req.arguments.levels or 20
     local frames = dbgaux.getstackframes(coinfo.co, levels)
     -- 保存起来
-    debugger.strackFrames = frames
     vscaux.send_response(req.command, req.seq, {
         stackFrames = frames,
         totalFrames = #frames,
     })
 end
 
-local function encode_varref(type, frameId)
-    return (type * 100 + frameId) * 10000000
-end
-
 function reqfuncs.scopes(coinfo, req)
-    dbgaux.startframe(coinfo.co);
+    local function encode_varref(type, frameId)
+        return (type * 100 + frameId) * 10000000
+    end
+
     local frameId = req.arguments.frameId
+    dbgaux.clearvarcache(coinfo.co);
     vscaux.send_response(req.command, req.seq, {
         scopes = {
             {
@@ -305,6 +327,18 @@ function reqfuncs.variables(coinfo, req)
         })
     else 
         vscaux.send_error_response(req.command, req.seq, vars)
+    end
+end
+
+function reqfuncs.evaluate(coinfo, req)
+    if debugger.state ~= ST_PAUSE then
+        vscaux.send_response(req.command, req.seq, {result = ""})
+    end
+    local ok, result = dbgaux.evaluate(coinfo.co, req.arguments.expression, req.arguments.frameId)
+    if not ok then
+        vscaux.send_error_response(req.command, req.seq, result)
+    else
+        vscaux.send_response(req.command, req.seq, {result = result})
     end
 end
 
@@ -408,7 +442,7 @@ function on_line(co, source, what, name, line)
        state == ST_STEP_IN or state == ST_STEP_OUT then
         local reason;
         local hit = false
-        if breakpoints_hittest(source, line) then     -- 断点命中测试总是在最前面
+        if breakpoints_hittest(coinfo, source, line) then     -- 断点命中测试总是在最前面
             reason = "breakpoint"
             hit = true
         elseif state == ST_STEP_OVER then
@@ -422,8 +456,8 @@ function on_line(co, source, what, name, line)
                 hit = true
             end
         elseif state == ST_STEP_IN then
-            reason = debugger.ispause and "pause" or "step"
-            debugger.ispause = false
+            reason = debugger.pausereason or "step"
+            debugger.pausereason = "step"
             hit = true
         end
         -- 命中
