@@ -1,3 +1,7 @@
+/**
+ * 调试器管理器
+ * by code
+ */
 #include "vscdbg.h"
 #include "dbgaux.h"
 #include "lstate.h"

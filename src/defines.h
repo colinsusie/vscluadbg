@@ -1,3 +1,7 @@
+/**
+ * 头文件定义
+ * by code
+ */
 #ifndef __DEFINES_H__
 #define __DEFINES_H__
 

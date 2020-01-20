@@ -1,6 +1,6 @@
 /**
- * Lua支持库
- * by colin
+ * 提供给调试器脚本的辅助函数库
+ * by code
  */
 #include "defines.h"
 #ifndef __DBGAUX_H__

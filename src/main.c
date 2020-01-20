@@ -1,3 +1,7 @@
+/**
+ * 调试器入口
+ * by code
+ */
 #include "defines.h"
 #include "vscdbg.h"
 

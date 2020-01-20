@@ -1,5 +1,6 @@
 --[[
     与VSCode通讯的模块
+    by colin
 ]]
 local cjson = require "cjson"
 local vscaux = {}

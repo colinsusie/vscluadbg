@@ -1,3 +1,7 @@
+--[[
+    路径函数库
+    by colin
+]]
 local lfs = require "lfs"
 
 local pathaux = {}

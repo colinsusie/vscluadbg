@@ -1,5 +1,6 @@
 --[[
 	modify from skynet
+	by colin
 ]]
 local debug = debug
 local table = table

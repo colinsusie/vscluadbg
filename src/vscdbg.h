@@ -1,3 +1,7 @@
+/**
+ * 调试器管理器
+ * by code
+ */
 #ifndef __VSCDBG_H__
 #define __VSCDBG_H__
 #include "defines.h"

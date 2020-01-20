@@ -1,5 +1,6 @@
 /**
  * 提供给调试器脚本的辅助函数库
+ * by code
  */
 #include "dbgaux.h"
 #include "vscdbg.h"

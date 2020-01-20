@@ -1,5 +1,6 @@
 --[[
     字符串辅助函数
+    by colin
 ]]
 local straux = {}
 
