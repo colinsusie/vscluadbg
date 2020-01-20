@@ -286,6 +286,7 @@ end
 
 function reqfuncs.stackTrace(coinfo, req)
     local levels = req.arguments.levels or 20
+    lavels = math.min(levels, 90)
     local frames = dbgaux.getstackframes(coinfo.co, levels)
     -- 保存起来
     vscaux.send_response(req.command, req.seq, {
@@ -349,7 +350,7 @@ function reqfuncs.disconnect(coinfo, req)
         category = "console",
         output = "Lua Debugger stop!\n",
     })
-    dbgaux.exit()
+    os.exit(0)
 end
 
 -----------------------------------------------------------------------------------

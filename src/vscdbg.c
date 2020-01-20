@@ -202,23 +202,23 @@ void open_mylibs(lua_State *dL) {
 }
 
 static void init_lua_path(lua_State *dL, const char *path) {
-    lua_getglobal(dL, "package");    // <pkg>
-    lua_getfield(dL, -1, "path");    // <pkg|path>
-    lua_pushstring(dL, "path");     // <pkg|path|pathkey>
-    lua_pushfstring(dL, "%s;%s/../?.lua;%s/../?.luac", lua_tostring(dL, -2), path, path); // <pkg|path|pathkey|pathval>
-    lua_settable(dL, -4);    // <pkg|path>
-    lua_pop(dL, 1); // <pkg>
+    lua_getglobal(dL, "package");    // [pkg]
+    lua_getfield(dL, -1, "path");    // [pkg|path]
+    lua_pushstring(dL, "path");     // [pkg|path|pathkey]
+    lua_pushfstring(dL, "%s;%s/../?.lua;%s/../?.luac", lua_tostring(dL, -2), path, path); // [pkg|path|pathkey|pathval]
+    lua_settable(dL, -4);    // [pkg|path]
+    lua_pop(dL, 1); // [pkg]
 
 #ifdef _WIN32
     #define LIB_EXT "dll"
 #else
     #define LIB_EXT "so"
 #endif
-    lua_getfield(dL, -1, "cpath");    // <pkg|cpath>
-    lua_pushstring(dL, "cpath");     // <pkg|cpath|cpathkey>
-    lua_pushfstring(dL, "%s;%s/?.%s", lua_tostring(dL, -2), path, LIB_EXT); // <pkg|cpath|cpathkey|cpathval>
-    lua_settable(dL, -4);    // <pkg|path>
-    lua_pop(dL, 2); // <pkg>
+    lua_getfield(dL, -1, "cpath");    // [pkg|cpath]
+    lua_pushstring(dL, "cpath");     // [pkg|cpath|cpathkey]
+    lua_pushfstring(dL, "%s;%s/?.%s", lua_tostring(dL, -2), path, LIB_EXT); // [pkg|cpath|cpathkey|cpathval]
+    lua_settable(dL, -4);    // [pkg|path]
+    lua_pop(dL, 2); // [pkg]
 }
 
 // 新建DBG

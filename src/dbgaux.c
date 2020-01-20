@@ -17,36 +17,23 @@ static int addpath (lua_State *dL) {
     const char *path = luaL_checklstring(dL, 2, &pathsz);
     const char *cpath = luaL_checklstring(dL, 3, &cpathsz);
 
-    luaL_checkstack(L, 10, NULL);
     lua_getglobal(L, "package");    // <pkg>
     lua_getfield(L, -1, "path");    // <pkg|path>
-    size_t opathsz, ocpathsz;
-    const char *opath = lua_tolstring(L, -1, &opathsz);
-    lua_getfield(L, -2, "cpath");   // <pkg|path|cpath>
-    const char *ocpath = lua_tolstring(L, -1, &ocpathsz);
-    lua_pop(L, 2);      // <pkg>
-
+    const char *opath = lua_tolstring(L, -1, NULL);
     if (!strstr(opath, path)) {
-        luaL_Buffer b;
-        luaL_buffinit(L, &b);
-            luaL_addlstring(&b, opath, opathsz);
-            luaL_addstring(&b, ";");
-            luaL_addlstring(&b, path, pathsz);
-        luaL_pushresult(&b);            // <pkg|path>
-        lua_setfield(L, -2, "path");    // <pkg>
+        lua_pushfstring(L, "%s;%s", opath, path); // <pkg|path|npath>
+        lua_setfield(L, -3, "path");    // <pkg|path>
     }
+    lua_pop(L, 1); // <pkg>
 
+    lua_getfield(L, -1, "cpath");   // <pkg|cpath>
+    const char *ocpath = lua_tolstring(L, -1, NULL);
     if (!strstr(ocpath, cpath)) {
-        luaL_Buffer b;
-        luaL_buffinit(L, &b);
-            luaL_addlstring(&b, ocpath, ocpathsz);
-            luaL_addstring(&b, ";");
-            luaL_addlstring(&b, cpath, cpathsz);
-        luaL_pushresult(&b);            // <pkg|cpath>
-        lua_setfield(L, -2, "cpath");   // <pkg>
+        lua_pushfstring(L, "%s;%s", ocpath, cpath); // <pkg|cpath|npath>
+        lua_setfield(L, -3, "cpath");    // <pkg|cpath>
     }
+    lua_pop(L, 2);  // <>
 
-    lua_pop(L, 1);  // <>
     return 0;
 }
 
@@ -149,53 +136,10 @@ static void decode_varref(lua_Integer ref, int *type, int *level, int *id) {
 }
 
 static void push_value_string(lua_State *dL, lua_State *L, int stkidx) {
-    int type = lua_type(L, stkidx);
-    switch (type) {
-    case LUA_TNIL: {
-        lua_pushstring(dL, "nil");
-        break;
-    }
-    case LUA_TBOOLEAN: {
-        lua_pushstring(dL, (lua_toboolean(L, stkidx) ? "true" : "false"));
-        break;
-    }
-    case LUA_TLIGHTUSERDATA: {
-        lua_pushfstring(dL, "lightuserdata: %p", lua_topointer(L, stkidx));
-        break;
-    }
-    case LUA_TNUMBER: {
-        if (lua_isinteger(L, stkidx)) {
-            lua_Integer i = lua_tointeger(L, stkidx);
-            lua_pushfstring(dL, "%I", i);
-        } else {
-            lua_pushfstring(dL, "%f", lua_tonumber(L, stkidx));
-        }
-        break;
-    }
-    case LUA_TSTRING: {
-        size_t len;
-        const char *s = lua_tolstring(L, stkidx, &len);
-        if (len > 1024) len = 1024;
-        lua_pushlstring(dL, s, len);
-        break;
-    }
-    case LUA_TTABLE: {
-        lua_pushfstring(dL, "table: %p", lua_topointer(L, stkidx));
-        break;
-    }
-    case LUA_TFUNCTION: {
-        lua_pushfstring(dL, "function: %p", lua_topointer(L, stkidx));
-        break;
-    }
-    case LUA_TUSERDATA: {
-        lua_pushfstring(dL, "userdata: %p", lua_topointer(L, stkidx));
-        break;
-    }
-    case LUA_TTHREAD: {
-        lua_pushfstring(dL, "thread: %p", lua_topointer(L, stkidx));
-        break;
-    }
-    }
+    size_t len;
+    const char *val = luaL_tolstring(L, stkidx, &len);  // <str>
+    lua_pushlstring(dL, val, len);  // [val]
+    lua_pop(L, 1);  // <>
 }
 
 static void push_value_type(lua_State *dL, lua_State *L, int stkidx) {
@@ -513,11 +457,6 @@ static int evaluate(lua_State *dL) {
     }
 }
 
-// 停止
-static int exitprogram(lua_State *dL) {
-    exit(0);
-}
-
 static const luaL_Reg lib[] = {
     {"addpath", addpath},
     {"runscript", runscript},
@@ -525,7 +464,6 @@ static const luaL_Reg lib[] = {
     {"clearvarcache", clearvarcache},
     {"getvars", getvars},
     {"evaluate", evaluate},
-    {"exit", exitprogram},
     {NULL, NULL},
 };
 
