@@ -12,73 +12,73 @@ Content-Length: 104
 {"type":"event","seq":3,"event":"output","body":{"category":"console","output":"Lua Debugger start!\n"}}
 Content-Length: 291
 
-{"command":"setBreakpoints","arguments":{"source":{"name":"test.lua","path":"/home/cogame/colin/mylib/vscluadbg/vscext/bin/test/test.lua"},"lines":[72,80],"breakpoints":[{"line":72,"hitCondition":"3"},{"line":80,"condition":"k == \"male\""}],"sourceModified":false},"type":"request","seq":2}
+{"command":"setBreakpoints","arguments":{"source":{"name":"test.lua","path":"./vscluadbg/vscext/bin/test/test.lua"},"lines":[72,80],"breakpoints":[{"line":72,"hitCondition":"3"},{"line":80,"condition":"k == \"male\""}],"sourceModified":false},"type":"request","seq":2}
 Content-Length: 344
 
-{"request_seq":2,"type":"response","body":{"breakpoints":[{"verified":true,"line":72,"source":{"path":"/home/cogame/colin/mylib/vscluadbg/vscext/bin/test/test.lua"}},{"verified":true,"line":80,"source":{"path":"/home/cogame/colin/mylib/vscluadbg/vscext/bin/test/test.lua"}}]},"seq":4,"command":"setBreakpoints","success":true}
+{"request_seq":2,"type":"response","body":{"breakpoints":[{"verified":true,"line":72,"source":{"path":"./vscluadbg/vscext/bin/test/test.lua"}},{"verified":true,"line":80,"source":{"path":"./vscluadbg/vscext/bin/test/test.lua"}}]},"seq":4,"command":"setBreakpoints","success":true}
 Content-Length: 421
 
-{"command":"launch","arguments":{"name":"vsclua debugger","type":"lua","request":"launch","program":"/home/cogame/colin/mylib/vscluadbg/vscext/bin/test/test.lua","args":["hello","world"],"stopOnEntry":false,"luaPath":"/home/cogame/colin/mylib/vscluadbg/vscext/bin/test/?.lua","cPath":"/home/cogame/colin/mylib/vscluadbg/vscext/bin/test/?.so","__sessionId":"c091bd86-44ae-44ca-8e19-91288bb70c34"},"type":"request","seq":3}
+{"command":"launch","arguments":{"name":"vsclua debugger","type":"lua","request":"launch","program":"./vscluadbg/vscext/bin/test/test.lua","args":["hello","world"],"stopOnEntry":false,"luaPath":"./vscluadbg/vscext/bin/test/?.lua","cPath":"./vscluadbg/vscext/bin/test/?.so","__sessionId":"c091bd86-44ae-44ca-8e19-91288bb70c34"},"type":"request","seq":3}
 Content-Length: 77
 
 {"request_seq":3,"type":"response","seq":5,"command":"launch","success":true}
 Content-Length: 196
 
-{"type":"event","seq":6,"event":"output","body":{"output":"hello\tworld\n","line":102,"category":"stdout","source":{"path":"/home/cogame/colin/mylib/vscluadbg/vscext/bin/test/test.lua"}}}
+{"type":"event","seq":6,"event":"output","body":{"output":"hello\tworld\n","line":102,"category":"stdout","source":{"path":"./vscluadbg/vscext/bin/test/test.lua"}}}
 Content-Length: 195
 
-{"type":"event","seq":7,"event":"output","body":{"output":"(*vararg)\t10\n","line":7,"category":"stdout","source":{"path":"/home/cogame/colin/mylib/vscluadbg/vscext/bin/test/test.lua"}}}
+{"type":"event","seq":7,"event":"output","body":{"output":"(*vararg)\t10\n","line":7,"category":"stdout","source":{"path":"./vscluadbg/vscext/bin/test/test.lua"}}}
 Content-Length: 195
 
-{"type":"event","seq":8,"event":"output","body":{"output":"(*vararg)\t20\n","line":7,"category":"stdout","source":{"path":"/home/cogame/colin/mylib/vscluadbg/vscext/bin/test/test.lua"}}}
+{"type":"event","seq":8,"event":"output","body":{"output":"(*vararg)\t20\n","line":7,"category":"stdout","source":{"path":"./vscluadbg/vscext/bin/test/test.lua"}}}
 Content-Length: 198
 
-{"type":"event","seq":9,"event":"output","body":{"output":"(*vararg)\thello\n","line":7,"category":"stdout","source":{"path":"/home/cogame/colin/mylib/vscluadbg/vscext/bin/test/test.lua"}}}
+{"type":"event","seq":9,"event":"output","body":{"output":"(*vararg)\thello\n","line":7,"category":"stdout","source":{"path":"./vscluadbg/vscext/bin/test/test.lua"}}}
 Content-Length: 198
 
-{"type":"event","seq":10,"event":"output","body":{"output":"(*vararg)\ttrue\n","line":7,"category":"stdout","source":{"path":"/home/cogame/colin/mylib/vscluadbg/vscext/bin/test/test.lua"}}}
+{"type":"event","seq":10,"event":"output","body":{"output":"(*vararg)\ttrue\n","line":7,"category":"stdout","source":{"path":"./vscluadbg/vscext/bin/test/test.lua"}}}
 Content-Length: 188
 
-{"type":"event","seq":11,"event":"output","body":{"output":"time\n","line":20,"category":"stdout","source":{"path":"/home/cogame/colin/mylib/vscluadbg/vscext/bin/test/test.lua"}}}
+{"type":"event","seq":11,"event":"output","body":{"output":"time\n","line":20,"category":"stdout","source":{"path":"./vscluadbg/vscext/bin/test/test.lua"}}}
 Content-Length: 198
 
-{"type":"event","seq":12,"event":"output","body":{"output":"co-body\t1\t10\n","line":46,"category":"stdout","source":{"path":"/home/cogame/colin/mylib/vscluadbg/vscext/bin/test/test.lua"}}}
+{"type":"event","seq":12,"event":"output","body":{"output":"co-body\t1\t10\n","line":46,"category":"stdout","source":{"path":"./vscluadbg/vscext/bin/test/test.lua"}}}
 Content-Length: 190
 
-{"type":"event","seq":13,"event":"output","body":{"output":"foo\t2\n","line":41,"category":"stdout","source":{"path":"/home/cogame/colin/mylib/vscluadbg/vscext/bin/test/test.lua"}}}
+{"type":"event","seq":13,"event":"output","body":{"output":"foo\t2\n","line":41,"category":"stdout","source":{"path":"./vscluadbg/vscext/bin/test/test.lua"}}}
 Content-Length: 200
 
-{"type":"event","seq":14,"event":"output","body":{"output":"func_co\ttrue\t4\n","line":54,"category":"stdout","source":{"path":"/home/cogame/colin/mylib/vscluadbg/vscext/bin/test/test.lua"}}}
+{"type":"event","seq":14,"event":"output","body":{"output":"func_co\ttrue\t4\n","line":54,"category":"stdout","source":{"path":"./vscluadbg/vscext/bin/test/test.lua"}}}
 Content-Length: 194
 
-{"type":"event","seq":15,"event":"output","body":{"output":"co-body\tr\n","line":48,"category":"stdout","source":{"path":"/home/cogame/colin/mylib/vscluadbg/vscext/bin/test/test.lua"}}}
+{"type":"event","seq":15,"event":"output","body":{"output":"co-body\tr\n","line":48,"category":"stdout","source":{"path":"./vscluadbg/vscext/bin/test/test.lua"}}}
 Content-Length: 205
 
-{"type":"event","seq":16,"event":"output","body":{"output":"func_co\ttrue\t11\t-9\n","line":55,"category":"stdout","source":{"path":"/home/cogame/colin/mylib/vscluadbg/vscext/bin/test/test.lua"}}}
+{"type":"event","seq":16,"event":"output","body":{"output":"func_co\ttrue\t11\t-9\n","line":55,"category":"stdout","source":{"path":"./vscluadbg/vscext/bin/test/test.lua"}}}
 Content-Length: 197
 
-{"type":"event","seq":17,"event":"output","body":{"output":"co-body\tx\ty\n","line":50,"category":"stdout","source":{"path":"/home/cogame/colin/mylib/vscluadbg/vscext/bin/test/test.lua"}}}
+{"type":"event","seq":17,"event":"output","body":{"output":"co-body\tx\ty\n","line":50,"category":"stdout","source":{"path":"./vscluadbg/vscext/bin/test/test.lua"}}}
 Content-Length: 206
 
-{"type":"event","seq":18,"event":"output","body":{"output":"func_co\ttrue\t10\tend\n","line":56,"category":"stdout","source":{"path":"/home/cogame/colin/mylib/vscluadbg/vscext/bin/test/test.lua"}}}
+{"type":"event","seq":18,"event":"output","body":{"output":"func_co\ttrue\t10\tend\n","line":56,"category":"stdout","source":{"path":"./vscluadbg/vscext/bin/test/test.lua"}}}
 Content-Length: 228
 
-{"type":"event","seq":19,"event":"output","body":{"output":"func_co\tfalse\tcannot resume dead coroutine\n","line":57,"category":"stdout","source":{"path":"/home/cogame/colin/mylib/vscluadbg/vscext/bin/test/test.lua"}}}
+{"type":"event","seq":19,"event":"output","body":{"output":"func_co\tfalse\tcannot resume dead coroutine\n","line":57,"category":"stdout","source":{"path":"./vscluadbg/vscext/bin/test/test.lua"}}}
 Content-Length: 191
 
-{"type":"event","seq":20,"event":"output","body":{"output":"co-body\n","line":62,"category":"stdout","source":{"path":"/home/cogame/colin/mylib/vscluadbg/vscext/bin/test/test.lua"}}}
+{"type":"event","seq":20,"event":"output","body":{"output":"co-body\n","line":62,"category":"stdout","source":{"path":"./vscluadbg/vscext/bin/test/test.lua"}}}
 Content-Length: 272
 
-{"type":"event","seq":21,"event":"output","body":{"output":"false\t/home/cogame/colin/mylib/vscluadbg/vscext/bin/test/test.lua:63: co error\n","line":67,"category":"stdout","source":{"path":"/home/cogame/colin/mylib/vscluadbg/vscext/bin/test/test.lua"}}}
+{"type":"event","seq":21,"event":"output","body":{"output":"false\t./vscluadbg/vscext/bin/test/test.lua:63: co error\n","line":67,"category":"stdout","source":{"path":"./vscluadbg/vscext/bin/test/test.lua"}}}
 Content-Length: 185
 
-{"type":"event","seq":22,"event":"output","body":{"output":"1\n","line":72,"category":"stdout","source":{"path":"/home/cogame/colin/mylib/vscluadbg/vscext/bin/test/test.lua"}}}
+{"type":"event","seq":22,"event":"output","body":{"output":"1\n","line":72,"category":"stdout","source":{"path":"./vscluadbg/vscext/bin/test/test.lua"}}}
 Content-Length: 185
 
-{"type":"event","seq":23,"event":"output","body":{"output":"2\n","line":72,"category":"stdout","source":{"path":"/home/cogame/colin/mylib/vscluadbg/vscext/bin/test/test.lua"}}}
+{"type":"event","seq":23,"event":"output","body":{"output":"2\n","line":72,"category":"stdout","source":{"path":"./vscluadbg/vscext/bin/test/test.lua"}}}
 Content-Length: 185
 
-{"type":"event","seq":24,"event":"output","body":{"output":"3\n","line":72,"category":"stdout","source":{"path":"/home/cogame/colin/mylib/vscluadbg/vscext/bin/test/test.lua"}}}
+{"type":"event","seq":24,"event":"output","body":{"output":"3\n","line":72,"category":"stdout","source":{"path":"./vscluadbg/vscext/bin/test/test.lua"}}}
 Content-Length: 87
 
 {"type":"event","seq":25,"event":"stopped","body":{"reason":"breakpoint","threadId":1}}
@@ -99,7 +99,7 @@ Content-Length: 103
 {"command":"stackTrace","arguments":{"threadId":1,"startFrame":0,"levels":20},"type":"request","seq":6}
 Content-Length: 535
 
-{"request_seq":6,"type":"response","body":{"totalFrames":3,"stackFrames":[{"id":0,"name":"func_cond","column":1,"line":72,"source":{"path":"/home/cogame/colin/mylib/vscluadbg/vscext/bin/test/test.lua"}},{"id":1,"name":"entry","column":1,"line":99,"source":{"path":"/home/cogame/colin/mylib/vscluadbg/vscext/bin/test/test.lua"}},{"id":2,"name":"main chunk","column":1,"line":103,"source":{"path":"/home/cogame/colin/mylib/vscluadbg/vscext/bin/test/test.lua"}}]},"seq":28,"command":"stackTrace","success":true}
+{"request_seq":6,"type":"response","body":{"totalFrames":3,"stackFrames":[{"id":0,"name":"func_cond","column":1,"line":72,"source":{"path":"./vscluadbg/vscext/bin/test/test.lua"}},{"id":1,"name":"entry","column":1,"line":99,"source":{"path":"./vscluadbg/vscext/bin/test/test.lua"}},{"id":2,"name":"main chunk","column":1,"line":103,"source":{"path":"./vscluadbg/vscext/bin/test/test.lua"}}]},"seq":28,"command":"stackTrace","success":true}
 Content-Length: 56
 
 {"command":"configurationDone","type":"request","seq":7}
@@ -111,7 +111,7 @@ Content-Length: 103
 {"command":"stackTrace","arguments":{"threadId":1,"startFrame":0,"levels":20},"type":"request","seq":8}
 Content-Length: 535
 
-{"request_seq":8,"type":"response","body":{"totalFrames":3,"stackFrames":[{"id":0,"name":"func_cond","column":1,"line":72,"source":{"path":"/home/cogame/colin/mylib/vscluadbg/vscext/bin/test/test.lua"}},{"id":1,"name":"entry","column":1,"line":99,"source":{"path":"/home/cogame/colin/mylib/vscluadbg/vscext/bin/test/test.lua"}},{"id":2,"name":"main chunk","column":1,"line":103,"source":{"path":"/home/cogame/colin/mylib/vscluadbg/vscext/bin/test/test.lua"}}]},"seq":30,"command":"stackTrace","success":true}
+{"request_seq":8,"type":"response","body":{"totalFrames":3,"stackFrames":[{"id":0,"name":"func_cond","column":1,"line":72,"source":{"path":"./vscluadbg/vscext/bin/test/test.lua"}},{"id":1,"name":"entry","column":1,"line":99,"source":{"path":"./vscluadbg/vscext/bin/test/test.lua"}},{"id":2,"name":"main chunk","column":1,"line":103,"source":{"path":"./vscluadbg/vscext/bin/test/test.lua"}}]},"seq":30,"command":"stackTrace","success":true}
 Content-Length: 46
 
 {"command":"threads","type":"request","seq":9}
@@ -144,13 +144,13 @@ Content-Length: 81
 {"request_seq":13,"type":"response","seq":35,"command":"continue","success":true}
 Content-Length: 185
 
-{"type":"event","seq":36,"event":"output","body":{"output":"4\n","line":72,"category":"stdout","source":{"path":"/home/cogame/colin/mylib/vscluadbg/vscext/bin/test/test.lua"}}}
+{"type":"event","seq":36,"event":"output","body":{"output":"4\n","line":72,"category":"stdout","source":{"path":"./vscluadbg/vscext/bin/test/test.lua"}}}
 Content-Length: 185
 
-{"type":"event","seq":37,"event":"output","body":{"output":"5\n","line":72,"category":"stdout","source":{"path":"/home/cogame/colin/mylib/vscluadbg/vscext/bin/test/test.lua"}}}
+{"type":"event","seq":37,"event":"output","body":{"output":"5\n","line":72,"category":"stdout","source":{"path":"./vscluadbg/vscext/bin/test/test.lua"}}}
 Content-Length: 190
 
-{"type":"event","seq":38,"event":"output","body":{"output":"age\t2\n","line":80,"category":"stdout","source":{"path":"/home/cogame/colin/mylib/vscluadbg/vscext/bin/test/test.lua"}}}
+{"type":"event","seq":38,"event":"output","body":{"output":"age\t2\n","line":80,"category":"stdout","source":{"path":"./vscluadbg/vscext/bin/test/test.lua"}}}
 Content-Length: 87
 
 {"type":"event","seq":39,"event":"stopped","body":{"reason":"breakpoint","threadId":1}}
@@ -165,13 +165,13 @@ Content-Length: 104
 {"command":"stackTrace","arguments":{"threadId":1,"startFrame":0,"levels":20},"type":"request","seq":15}
 Content-Length: 536
 
-{"request_seq":15,"type":"response","body":{"totalFrames":3,"stackFrames":[{"id":0,"name":"func_cond","column":1,"line":80,"source":{"path":"/home/cogame/colin/mylib/vscluadbg/vscext/bin/test/test.lua"}},{"id":1,"name":"entry","column":1,"line":99,"source":{"path":"/home/cogame/colin/mylib/vscluadbg/vscext/bin/test/test.lua"}},{"id":2,"name":"main chunk","column":1,"line":103,"source":{"path":"/home/cogame/colin/mylib/vscluadbg/vscext/bin/test/test.lua"}}]},"seq":41,"command":"stackTrace","success":true}
+{"request_seq":15,"type":"response","body":{"totalFrames":3,"stackFrames":[{"id":0,"name":"func_cond","column":1,"line":80,"source":{"path":"./vscluadbg/vscext/bin/test/test.lua"}},{"id":1,"name":"entry","column":1,"line":99,"source":{"path":"./vscluadbg/vscext/bin/test/test.lua"}},{"id":2,"name":"main chunk","column":1,"line":103,"source":{"path":"./vscluadbg/vscext/bin/test/test.lua"}}]},"seq":41,"command":"stackTrace","success":true}
 Content-Length: 104
 
 {"command":"stackTrace","arguments":{"threadId":1,"startFrame":0,"levels":20},"type":"request","seq":16}
 Content-Length: 536
 
-{"request_seq":16,"type":"response","body":{"totalFrames":3,"stackFrames":[{"id":0,"name":"func_cond","column":1,"line":80,"source":{"path":"/home/cogame/colin/mylib/vscluadbg/vscext/bin/test/test.lua"}},{"id":1,"name":"entry","column":1,"line":99,"source":{"path":"/home/cogame/colin/mylib/vscluadbg/vscext/bin/test/test.lua"}},{"id":2,"name":"main chunk","column":1,"line":103,"source":{"path":"/home/cogame/colin/mylib/vscluadbg/vscext/bin/test/test.lua"}}]},"seq":42,"command":"stackTrace","success":true}
+{"request_seq":16,"type":"response","body":{"totalFrames":3,"stackFrames":[{"id":0,"name":"func_cond","column":1,"line":80,"source":{"path":"./vscluadbg/vscext/bin/test/test.lua"}},{"id":1,"name":"entry","column":1,"line":99,"source":{"path":"./vscluadbg/vscext/bin/test/test.lua"}},{"id":2,"name":"main chunk","column":1,"line":103,"source":{"path":"./vscluadbg/vscext/bin/test/test.lua"}}]},"seq":42,"command":"stackTrace","success":true}
 Content-Length: 114
 
 {"command":"evaluate","arguments":{"expression":"t.name","frameId":0,"context":"watch"},"type":"request","seq":17}
