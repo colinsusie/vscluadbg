@@ -24,7 +24,7 @@ local THREAD_ID = 1     -- 线程ID
 -- 调试器
 debugger = {
     state = ST_BIRTH,   -- 状态
-    currco = {},        -- 当前的协程信息
+    currco = nil,        -- 当前的协程信息
     coinfos = {},       -- 协程信息
     nodebug = false,    -- 不调试
     breakpoints = {},   -- 断点列表
@@ -196,7 +196,14 @@ function reqfuncs.launch(coinfo, req)
         cpath = nil
     end
     if lupath or cpath then
-        dbgaux.addpath(coinfo.co, luapath, cpath)
+        local ok, msg = pcall(dbgaux.addpath, coinfo.co, luapath, cpath)
+        if not ok then
+            vscaux.send_event("output", {
+                category = "console",
+                output = msg,
+            })
+            return true
+        end
     end
     -- 运行脚本
     local program = req.arguments.program
@@ -313,7 +320,7 @@ function reqfuncs.scopes(coinfo, req)
                 variablesReference = encode_varref(2, frameId),
             },
             {
-                name = "Upvalues",
+                name = "UpValues",
                 variablesReference = encode_varref(3, frameId),
             },
         }
@@ -374,11 +381,12 @@ end
 function on_new_thread(co)
     local coinfo = {
         co = co,        -- 协程
+        pco = nil,      -- 前一个协程
         level = 0,      -- 当前调用层级
         plevel = -1,    -- 停下来时的调用层级
     }
     debugger.coinfos[co] = coinfo
-    if debugger.currco then
+    if not debugger.currco then
         debugger.currco = coinfo
     end
 end
@@ -386,6 +394,11 @@ end
 -- 停止hook一个线程
 function on_free_thread(co)
     debugger.coinfos[co] = nil
+end
+
+-- 恢复一个线程
+function on_resume_thread(co)
+    
 end
 
 -- 处理请求
@@ -505,13 +518,14 @@ function on_output(str, source, line)
 end
 
 function debuglog(msg, outvsc)
-    -- 正式版去掉下面的注释
-    do return end
-    if not debugger.log then
-        debugger.log = io.open("/Users/colin/mylib/vscluadbg/run.log", 'w')
-    end 
-    debugger.log:write(tostring(msg))
-    debugger.log:flush()
+    -- 正式版下面变成false
+    if false then
+        if not debugger.log then
+            debugger.log = io.open("run.log", 'w')
+        end 
+        debugger.log:write(tostring(msg))
+        debugger.log:flush()
+    end
     -- 输出到VSC
     if outvsc then
         vscaux.send_event("output", {

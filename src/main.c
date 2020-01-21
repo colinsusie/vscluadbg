@@ -36,6 +36,10 @@ void on_userstatefree(lua_State *L, lua_State *L1) {
     vscdbg_free_thread(L, L1);
 }
 
+void on_userstateresume(lua_State *L, int nargs) {
+    vscdbg_resume_thread(L);
+}
+
 void do_writestring(lua_State *L, const void *ptr, size_t sz) {
     if (!L) return;
     vscdbg_t* dbg = vscdbg_get_from_state(L);

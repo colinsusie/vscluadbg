@@ -786,6 +786,7 @@ void on_userstateopen(lua_State *L);
 void on_userstateclose(lua_State *L);
 void on_userstatethread(lua_State *L, lua_State *L1);
 void on_userstatefree(lua_State *L, lua_State *L1);
+void on_userstateresume(lua_State *L, int nargs);
 void do_writestring(lua_State *L, const void *ptr, size_t sz);
 void do_writeline(lua_State *L);
 
@@ -793,6 +794,7 @@ void do_writeline(lua_State *L);
 #define luai_userstateclose on_userstateclose
 #define luai_userstatethread on_userstatethread
 #define luai_userstatefree on_userstatefree
+#define luai_userstateresume on_userstateresume
 #define lua_writestring do_writestring
 #define lua_writeline do_writeline
 

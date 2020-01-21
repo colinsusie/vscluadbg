@@ -13,6 +13,7 @@ static const char *ON_START = "on_start";
 static const char *ON_STOP = "on_stop";
 static const char *ON_NEW_THREAD = "on_new_thread";
 static const char *ON_FREE_THREAD = "on_free_thread";
+static const char *ON_RESUME_THREAD = "on_resume_thread";
 static const char *ON_CALL = "on_call";
 static const char *ON_RETURN = "on_return";
 static const char *ON_LINE = "on_line";
@@ -22,7 +23,9 @@ static const char *ON_OUTPUT = "on_output";
 // 检查调用，返LUA_OK表示成功，其他表示失败，错误对象在栈顶
 static void check_call(lua_State *L, int error, const char *func) {
     if (error) {
-        fprintf(stderr, "call %s failed: %s\n", func, lua_tostring(L, -1));
+        vscdbg_t *dbg = vscdbg_get_from_state(L);
+        vscdbg_debuglog(dbg, "%s error: %s\n", func, lua_tostring(L, -1));
+        lua_pop(L, 1);
     }
 }
 
@@ -69,6 +72,15 @@ static void on_free_thread(vscdbg_t *dbg, lua_State *L) {
         check_call(dbg->dL, lua_pcall(dbg->dL, 1, 0, 0), ON_FREE_THREAD);
     } else {
         fprintf(stderr, "%s must be a function\n", ON_FREE_THREAD);
+    }
+}
+
+static void on_resume_thread(vscdbg_t *dbg, lua_State *L) {
+    if (lua_getglobal(dbg->dL, ON_RESUME_THREAD) == LUA_TFUNCTION) {
+        lua_pushlightuserdata(dbg->dL, L);
+        check_call(dbg->dL, lua_pcall(dbg->dL, 1, 0, 0), ON_RESUME_THREAD);
+    } else {
+        fprintf(stderr, "%s must be a function\n", ON_RESUME_THREAD);
     }
 }
 
@@ -155,6 +167,12 @@ void vscdbg_free_thread(lua_State *L, lua_State *L1) {
     if (dbg) on_free_thread(dbg, L1);
 }
 
+// 恢复启动一个线程
+void vscdbg_resume_thread(lua_State *L) {
+    vscdbg_t *dbg = vscdbg_get_from_state(L);
+    if (dbg) on_resume_thread(dbg, L);
+}
+
 // 处理客户端请求
 void vscdbg_handle_request(vscdbg_t *dbg, lua_State *L) {
     if (lua_getglobal(dbg->dL, HANDLE_REQUEST) == LUA_TFUNCTION) {
@@ -172,7 +190,7 @@ void vscdbg_debuglog(vscdbg_t *dbg, const char *fmt, ...) {
         lua_pushvfstring(dbg->dL, fmt, argp);
         va_end(argp);
         lua_pushboolean(dbg->dL, 1);
-        check_call(dbg->dL, lua_pcall(dbg->dL, 2, 0, 0), "debuglog");
+        lua_pcall(dbg->dL, 2, 0, 0);
     }
 }
 
